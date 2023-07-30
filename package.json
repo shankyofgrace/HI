@@ -11,6 +11,9 @@
     "node.js": "^0.0.1-security"
   },
   "scripts": {
+    "load1": "node data/userdata.js",
+    "load2": "node data/estpostdata.js",
+    "load3": "node data/commentsdata.js",
     "start": "nodemon index.js"
   },
   "name": "phase-1-updated-apdev",

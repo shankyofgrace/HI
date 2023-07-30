@@ -2,18 +2,16 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const postSchema = new Schema({
 
     review: {
         type: String,
         required: true
     },
 
-    est:{
-        type: Schema.Types.ObjectId,
+    estname:{
+        type: String,
         required: true,
-        ref: 'Establishment',
-        immutable: true
     },
 
     cust:{
@@ -24,13 +22,19 @@ const userSchema = new Schema({
     },
 
     rating:{
-        type: Schema.Types.Integer,
+        type: Schema.Types.Number,
         required: true,
     },
 
-    attached: [String], 
+    attached:{
+        type: [String],
+        default: []
+    },  
 
-    helpful_num: Schema.Types.Integer
+    helpful_num: {
+        type: Schema.Types.Number,
+        default: 0
+    }
 
 });
 
