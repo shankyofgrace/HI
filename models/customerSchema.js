@@ -26,8 +26,7 @@ const customerSchema = new Schema({
     },
     
     date: {
-        type: Date, 
-        default: Date.now()
+        type: Date
     },
 
     location: String,
