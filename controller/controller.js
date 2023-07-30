@@ -18,6 +18,16 @@ const controller = {
        return;
     },
 
+    getHome: async function(req, res) {
+        res.render('homepage', {
+            layout: 'homepagelayout',
+            isLoggedIn: activeUser !== null
+        });
+        res.status(200);
+        return;
+            
+    },
+
     getLogin: async function(req, res) {
 
         res.render('login', {
@@ -76,7 +86,7 @@ const controller = {
                             return res.redirect(`/`);
                         }
                         registerValues = null;
-                        res.redirect('/');
+                        res.redirect('/home');
                     });
                 }   
                 else if(userdata.role ==='owner'){
@@ -97,7 +107,7 @@ const controller = {
                             return res.redirect(`/`);
                         }
                         registerValues = null;
-                        res.redirect('/');
+                        res.redirect('/home');
                     });
                 }
             }
@@ -120,11 +130,11 @@ const controller = {
             
             if(existingCustomer) {
                 activeUser = existingCustomer;
-                return res.redirect(`/homepage`);
+                return res.redirect(`/home`);
             }
             else if(existingOwner) {
                 activeUser = existingOwner;
-                return res.redirect(`/homepage`);
+                return res.redirect(`/home`);
             }
             else {
                 const queryParams = new URLSearchParams();
@@ -138,6 +148,11 @@ const controller = {
             return res.sendStatus(500);
         }
     }, 
+
+    logoutUser: async function(req, res) {
+        activeUser = null;
+        res.redirect(`/`);
+    }
 }
 
 

@@ -8,11 +8,13 @@ router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
 
 router.get(`/`, controller.getIndex);
+router.get(`/home`, controller.getHome);
 
 router.get(`/login`, controller.getLogin);
 router.get(`/register`, controller.getRegister);
 router.post(`/loginUser`, controller.loginUser);
 router.post(`/registerUser`, controller.registerUser);
+router.get(`/logout`, controller.logoutUser);
 
 
 // router.get(`/about`, controller.getAbout);
