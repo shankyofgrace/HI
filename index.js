@@ -3,7 +3,7 @@ import 'dotenv/config';
 import db from './models/db.js';
 import express from "express";
 import exphbs from "express-handlebars";
-import routes from './routes.js';
+import routes from './models/routes.js';
 import bodyParser from 'body-parser';
 import Handlebars from 'handlebars';
 import path from 'path';
@@ -14,7 +14,9 @@ import { dirname, join }        from 'path';
 
 const app = express();
 
-app.engine("hbs", exphbs.engine({extname: 'hbs', defaultLayout: 'main'}));
+app.engine("hbs", exphbs.engine({
+    extname: 'hbs',
+}));
 app.set("view engine", "hbs");
 app.set("views", "./views");
 

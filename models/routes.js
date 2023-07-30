@@ -1,14 +1,15 @@
 import { Router } from "express";
-//import controller from '../controllers/controller.js';
+import controller from '../controller/controller.js';
 import bodyParser from 'body-parser';
 
 const router = Router();
 
-// router.use(bodyParser.urlencoded({extended: true}));
-// router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({extended: true}));
+router.use(bodyParser.json());
 
-// router.get(`/`, controller.getIndex);
-
+router.get(`/`, controller.getIndex);
+router.get(`/login`, controller.getLogin);
+router.get(`/register`, controller.getRegister);
 // router.get(`/about`, controller.getAbout);
 
 // router.get(`/cafe`, controller.getCafes);
