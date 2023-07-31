@@ -95,7 +95,8 @@ export async function createPosts(){
         review: "aaaaa",
         rating: "4",
         cust: await getCustomer("Gabrielle Tongol"),
-        helpful_num: 11
+        helpful_num: 11,
+        nothelpful_num: 0,
     }));
 
     posts.push(new Post({
@@ -103,7 +104,8 @@ export async function createPosts(){
         review: "hello",
         rating: "4",
         cust: await getCustomer("Luke Chiang"),
-        helpful_num: 2
+        helpful_num: 2,
+        nothelpful_num: 0,
     }));
 
     posts.push(new Post({
@@ -111,7 +113,8 @@ export async function createPosts(){
         review: "heheheeh",
         rating: "3",
         cust: await getCustomer("Harry Styles"),
-        helpful_num: 2
+        helpful_num: 2,
+        nothelpful_num: 0,
     }));
 
     posts.push(new Post({
@@ -120,7 +123,8 @@ export async function createPosts(){
         rating: "1",
         attached: [],
         cust: await getCustomer("Taylor Swift"),
-        helpful_num: 0
+        helpful_num: 0,
+        nothelpful_num: 0,
     }));
 
     posts.push(new Post({
@@ -129,7 +133,8 @@ export async function createPosts(){
         rating: "5",
         attached: [],
         cust: await getCustomer("Gabrielle Tongol"),
-        helpful_num: 0
+        helpful_num: 0,
+        nothelpful_num: 0,
     }));
 
     posts.push(new Post({
@@ -138,7 +143,8 @@ export async function createPosts(){
         rating: "5",
         attached: ["uploads/Screenshot 2023-06-21 at 7.02.00 PM.png"],
         cust: await getCustomer("Taylor Swift"),
-        helpful_num: 0
+        helpful_num: 0,
+        nothelpful_num: 0,
     }));
 
     posts.push(new Post({
@@ -147,7 +153,8 @@ export async function createPosts(){
         rating: "3",
         attached: ["uploads/Screenshot 2023-06-05 at 11.58.39 AM.png"],
         cust: await getCustomer("Sam Kim"),
-        helpful_num: 0
+        helpful_num: 0,
+        nothelpful_num: 0,
     }));
     
 
