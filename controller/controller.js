@@ -6,6 +6,8 @@ import { Comment } from "../models/commentSchema.js";
 
 let registerValues = null;
 let activeUser = null;
+let estData;
+
 
 const controller = {
     getIndex: async function(req, res) {
@@ -152,7 +154,77 @@ const controller = {
     logoutUser: async function(req, res) {
         activeUser = null;
         res.redirect(`/`);
-    }
+    },
+
+    getEstAteRicas: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Ate Rica's Bacsilog"});
+        //console.log(estData);
+        let temp_estData = {
+            name: "hi",
+            description: null,
+            owner: null,
+            path: null,
+            icon: null,
+        };
+        temp_estData.name = estData.name;
+        temp_estData.description = estData.description;
+        temp_estData.owner = estData.owner;
+        temp_estData.path = estData.path;
+        temp_estData.icon = estData.icon;
+
+        const posts = await Post.find({ estname: "Ate Rica's Bacsilog" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+        //console.log(temp_post);
+        // estIndex = "Ate Rica's Bacsilog";
+        // const estData = await dbconn.getDb().collection('Establishments').findOne({ _id: new ObjectId('64bc319514a9df3a7505c2c0') });
+        // console.log(estData);
+        // const averageRating = calculateAverageRating(loopPosts);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postData: temp_post,
+            //loopPosts, averageRating 
+        });
+    },
+
+    updateHelpful: async function(req, res){
+        const postId = req.query.postId;
+        const post = await Post.findOne({_id: postId});
+        const updatePost = await Post.updateOne({_id: postId}, {$set: {helpful_num: post.helpful_num + 1 }});
+        if(updatePost){
+            res.sendStatus(400);
+        } else {
+            res.sendStatus(200);
+        }
+    },
+
+    updateNotHelpful: async function(req, res){
+        const postId = req.query.postId;
+        const post = await Post.findOne({_id: postId});
+        const updatePost = await Post.updateOne({_id: postId}, {$set: {nothelpful_num: post.nothelpful_num + 1 }});
+        if(updatePost){
+            res.sendStatus(400);
+        } else {
+            res.sendStatus(200);
+        }
+    },
+
+
 }
 
 

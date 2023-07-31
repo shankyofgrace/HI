@@ -16,6 +16,9 @@ router.post(`/loginUser`, controller.loginUser);
 router.post(`/registerUser`, controller.registerUser);
 router.get(`/logout`, controller.logoutUser);
 
+router.get(`/updateHelpful`, controller.updateHelpful);
+router.get(`/updateNotHelpful`, controller.updateNotHelpful);
+router.get(`/estAteRicas`, controller.getEstAteRicas);
 
 // router.get(`/about`, controller.getAbout);
 

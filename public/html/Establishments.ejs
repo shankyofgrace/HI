@@ -106,7 +106,7 @@
           </p>
           <span class="comment-time">143 hours ago</span>
           <div class="comment-buttons">
-            <button class="helpful-button" click="incrementHelpful('<%= loopPosts[i]._id.toString() %>');">Helpful <%=
+            <button class="helpful-button" click="incrementHelpful('loopPosts[i]._id.toString() %>');">Helpful <%=
                 loopPosts[i].helpful_num %></button>
             <button onclick="incrementHelpful('<%= loopPosts[i]._id.toString() %>');">Not Helpful <%=
                 loopPosts[i].helpful_num %></button>

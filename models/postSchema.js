@@ -34,6 +34,11 @@ const postSchema = new Schema({
     helpful_num: {
         type: Schema.Types.Number,
         default: 0
+    },
+
+    nothelpful_num: {
+        type: Schema.Types.Number,
+        default: 0
     }
 
 });
