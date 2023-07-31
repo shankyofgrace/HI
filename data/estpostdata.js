@@ -128,6 +128,16 @@ export async function createPosts(){
     }));
 
     posts.push(new Post({
+        estname: "Happy N' Healthy",
+        review: "sARAP",
+        rating: "5",
+        attached: [],
+        cust: await getCustomer("Gabrielle Tongol"),
+        helpful_num: 0,
+        nothelpful_num: 0,
+    }));
+
+    posts.push(new Post({
         estname: "Kuya Mels",
         review: "widhnaoa ehhehhee",
         rating: "5",

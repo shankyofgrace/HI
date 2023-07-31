@@ -6,7 +6,20 @@ import { Comment } from "../models/commentSchema.js";
 
 let registerValues = null;
 let activeUser = null;
+let activeUserRole = null;
 let estData;
+let userData = null;
+
+import multer from 'multer';
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // The folder where uploaded images will be stored
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
 
 
 const controller = {
@@ -87,6 +100,9 @@ const controller = {
                             queryParams.append('message', 'Error creating user!');
                             return res.redirect(`/`);
                         }
+                        
+                        activeUser = newCustomer;
+                        activeUserRole = 'customer';
                         registerValues = null;
                         res.redirect('/home');
                     });
@@ -108,6 +124,8 @@ const controller = {
                             queryParams.append('message', 'Error creating establishment!');
                             return res.redirect(`/`);
                         }
+                        activeUser = newOwner;
+                        activeUserRole = 'owner';
                         registerValues = null;
                         res.redirect('/home');
                     });
@@ -131,10 +149,12 @@ const controller = {
             const existingOwner = await Owner.findOne({email: userdata.email, password: userdata.password});
             
             if(existingCustomer) {
+                activeUserRole = 'customer';
                 activeUser = existingCustomer;
                 return res.redirect(`/home`);
             }
             else if(existingOwner) {
+                activeUserRole = 'owner';
                 activeUser = existingOwner;
                 return res.redirect(`/home`);
             }
@@ -156,11 +176,112 @@ const controller = {
         res.redirect(`/`);
     },
 
+    viewProfile: async function(req, res) {
+        if(activeUserRole == 'customer') {
+            activeUser = await Customer.findOne({_id: activeUser._id});
+            let temp_userData = {
+                name: activeUser.name, 
+                username: activeUser.username,
+                email: activeUser.email,
+                password: activeUser.password,
+                date: activeUser.date.toString().substring(0, 9),
+                location: activeUser.location,
+                path: activeUser.path,
+                userbio: activeUser.userbio,
+            }
+
+            const posts = await Post.find({ cust: activeUser._id } );
+            console.log(posts);
+            let temp_cust;
+            let temp_post = [];
+            for (let i = 0; i < posts.length; i++) {
+                temp_cust = await Customer.findOne({ _id: posts[i].cust});
+                temp_post.push({
+                    _id: posts[i]._id.toString(),
+                    review: posts[i].review,
+                    estname: posts[i].estname,
+                    cust: posts[i].cust,
+                    cust_name: temp_cust.name,
+                    rating: posts[i].rating,
+                    attached: posts[i].attached,
+                    helpful_num: posts[i].helpful_num,
+                    nothelpful_num: posts[i].nothelpful_num,
+                });
+            }
+
+
+            res.render('viewprofile', {
+                layout: 'viewprofilelayout',
+                userData: temp_userData,
+                postData: temp_post,
+            })
+        }
+        else if(activeUserRole == 'owner') {
+            let temp_userData = {
+                name: activeUser.name, 
+                email: activeUser.email,
+                password: activeUser.password,
+                location: activeUser.location,
+            }
+        }
+
+        
+    },
+
+    editUser: async function(req, res) {
+        if(activeUserRole == 'customer') {
+            let temp_userData = {
+                name: activeUser.name, 
+                username: activeUser.username,
+                email: activeUser.email,
+                password: activeUser.password,
+                date: activeUser.date.toString().substring(0, 9),
+                location: activeUser.location,
+                path: activeUser.path,
+                userbio: activeUser.userbio,
+            }
+
+
+            res.render('editprofile', {
+                layout: 'editprofilelayout',
+                userData: temp_userData,
+    
+            })
+        }
+        
+    },
+
+    editUserDetails:  async function(req, res) {
+        const updatedDetails = req.body;
+        
+        let img_path = req.file;
+        if(img_path === undefined){
+            img_path = activeUser;
+        }           
+        
+        if(activeUserRole == 'customer') {
+            const updateUser = await Customer.updateOne({_id: activeUser._id}, {$set: {
+                path: img_path.path,
+                 name: updatedDetails.name,
+                username: updatedDetails.username,
+                email: updatedDetails.email,
+                location: updatedDetails.location,
+                userbio: updatedDetails.userbio,
+                password: updatedDetails.password,
+            
+            
+            }});
+
+            res.redirect(`/viewprofile`);
+            
+        }
+        
+    },
+
     getEstAteRicas: async function(req, res) {
         const estData = await Establishment.findOne({name: "Ate Rica's Bacsilog"});
-        //console.log(estData);
         let temp_estData = {
-            name: "hi",
+            name: null,
             description: null,
             owner: null,
             path: null,

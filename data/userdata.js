@@ -24,7 +24,7 @@ export default function createCustomers(){
         email: "gab@gmail.com",
         password: "123",
         location: "Taft",
-        path: "uploads/charlie.png",
+        path: "uploads/charlie.jpg",
         userbio: "I love taylor swift"
     }));
 
@@ -34,7 +34,7 @@ export default function createCustomers(){
         email: "tay@gmail.com",
         password: "123",
         location: "Taft",
-        path: "uploads/charlie.png",
+        path: "uploads/charlie.jpg",
         userbio: "screaming and fighting and kissing in the rain "
     }));
 
@@ -44,7 +44,7 @@ export default function createCustomers(){
         email: "sam@gmail.com",
         password: "123",
         location: "Taft",
-        path: "uploads/charlie.png",
+        path: "uploads/charlie.jpg",
         userbio: "can you love me like that"
     }));
 
@@ -54,7 +54,7 @@ export default function createCustomers(){
         email: "harry@gmail.com",
         password: "123",
         location: "Taft",
-        path: "uploads/charlie.png",
+        path: "uploads/charlie.jpg",
         userbio: "baby you are the love of my life"
     }));
 
@@ -64,7 +64,7 @@ export default function createCustomers(){
         email: "luke@gmail.com",
         password: "123",
         location: "Taft",
-        path: "uploads/charlie.png",
+        path: "uploads/charlie.jpg",
         userbio: "keeping you close shouldn't be hard"
     }));
 
