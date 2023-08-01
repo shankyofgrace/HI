@@ -43,3 +43,11 @@ Handlebars.registerHelper("equals", function(a , b, options) {
         return options.inverse(this);
     }
 });
+
+Handlebars.registerHelper('times', function (n, options) {
+    let result = '';
+    for (let i = 0; i < n; i++) {
+      result += options.fn(i);
+    }
+    return result;
+  });

@@ -33,7 +33,13 @@ router.get(`/logout`, controller.logoutUser);
 
 router.get(`/updateHelpful`, controller.updateHelpful);
 router.get(`/updateNotHelpful`, controller.updateNotHelpful);
+
 router.get(`/estAteRicas`, controller.getEstAteRicas);
+router.get(`/estGoodMunch`, controller.getEstGoodMunch);
+router.get(`/estHappyNHealthy`, controller.getEstHappyNHealthy);
+router.get(`/estKuyaMels`, controller.getEstKuyaMels);
+router.get(`/estPotatoGiant`, controller.getEstPotatoGiant);
+
 
 // router.get(`/about`, controller.getAbout);
 

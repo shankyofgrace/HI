@@ -4,15 +4,7 @@
     </div>
     <div class="content-text">
       <div class="text-container">
-        <h2>
-            {{estData.name}}
-            <div class="star-rating">
-              
-                <i class="fas fa-star star-icon"></i>
-               
-            </div>
-        </h2>
-        <span class="rating">Rating: <%= averageRating.toFixed(1) %>/5 (<%= loopPosts.length %> review/s)</span>
+        <span id="est_rating" class="rating">Rating: {{rating}}/5 ({{postLength}} review/s)</span>
         <a href="" class="custom-button">Review Now</a>
       </div>
     </div>
@@ -36,7 +28,7 @@
             {{this.cust_name}}
           </span>
           &nbsp &nbsp &nbsp
-          <span class="comment-author">
+          <span class="comment-author post-ratings">
             {{this.rating}}/5
           </span>
 
@@ -69,10 +61,13 @@
       {{/each}}
 
       <script>
+        //const rating = parseInt(document.querySelector('#est_rating').innerText.substring(8,9));
+        const post_ratings = document.querySelectorAll('.post-ratings');
         const helpfulBtn = document.querySelector('#helpful');
         const postid = document.querySelector('#postid');
         const nothelpfulBtn = document.querySelector('#nothelpful');
-
+        const container = document.querySelector('#starrating');
+        
         helpfulBtn.addEventListener('click', async function (e) {
           e.preventDefault();
           const postId = postid.value;  
@@ -98,6 +93,26 @@
               console.log('ok');
           }
         });
+
+        window.addEventListener('load',  (event) => {
+          console.log(post_ratings);
+            for(let i = 0; i != post_ratings.length; i++) {
+              let rating = post_ratings[i].innerText.substring(0,1);
+              console.log(rating);
+              let text_rating = document.createElement("p");
+              text_rating.innerText = post_ratings[i].innerText;
+              //post_ratings[i].innerText="";
+              for (let j = 0; j != rating; j++) {
+                let star = document.createElement("i");
+                star.classList.add("fas");
+                star.classList.add("fa-star");
+                star.classList.add("star-icon");
+                post_ratings[i].prepend(star);
+              }
+              //post_ratings[i].appendChild(text_rating);
+            }
+        });
+
         
       </script>
     

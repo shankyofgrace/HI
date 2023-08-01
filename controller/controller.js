@@ -281,17 +281,12 @@ const controller = {
     getEstAteRicas: async function(req, res) {
         const estData = await Establishment.findOne({name: "Ate Rica's Bacsilog"});
         let temp_estData = {
-            name: null,
-            description: null,
-            owner: null,
-            path: null,
-            icon: null,
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
         };
-        temp_estData.name = estData.name;
-        temp_estData.description = estData.description;
-        temp_estData.owner = estData.owner;
-        temp_estData.path = estData.path;
-        temp_estData.icon = estData.icon;
 
         const posts = await Post.find({ estname: "Ate Rica's Bacsilog" });
         let temp_cust;
@@ -310,16 +305,165 @@ const controller = {
                 nothelpful_num: posts[i].nothelpful_num,
             });
         }
-        //console.log(temp_post);
-        // estIndex = "Ate Rica's Bacsilog";
-        // const estData = await dbconn.getDb().collection('Establishments').findOne({ _id: new ObjectId('64bc319514a9df3a7505c2c0') });
-        // console.log(estData);
-        // const averageRating = calculateAverageRating(loopPosts);
+        const averageRating = calculateAverageRating(temp_post);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postlength: temp_post.length,
+            postData: temp_post,
+            rating: averageRating 
+        });
+    },
+
+    getEstGoodMunch: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Good Munch"});
+        let temp_estData = {
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
+        };
+
+        const posts = await Post.find({ estname: "Good Munch" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+        const averageRating = calculateAverageRating(temp_post);
+        const htmltext = `<p>Hiiiiiiiiillooo</p>`
         res.render('establishment', { 
             layout: 'estlayout',
             estData: temp_estData,
             postData: temp_post,
-            //loopPosts, averageRating 
+            postlength: temp_post.length,
+            htmltext: htmltext,
+            rating: averageRating 
+
+        });
+    },
+
+    getEstHappyNHealthy: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Happy N' Healthy"});
+        let temp_estData = {
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
+        };
+
+        const posts = await Post.find({ estname: "Happy N' Healthy" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+        const averageRating = calculateAverageRating(temp_post);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postlength: temp_post.length,
+            postData: temp_post,
+            rating: averageRating 
+        });
+    },
+
+    getEstKuyaMels: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Kuya Mels"});
+        let temp_estData = {
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
+        };
+
+        const posts = await Post.find({ estname: "Kuya Mels" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+
+        const averageRating = calculateAverageRating(temp_post);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postlength: temp_post.length,
+            postData: temp_post,
+            rating: averageRating 
+        });
+    },
+
+    getEstPotatoGiant: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Potato Giant"});
+        let temp_estData = {
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
+        };
+
+        const posts = await Post.find({ estname: "Potato Giant" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+        const averageRating = calculateAverageRating(temp_post);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postlength: temp_post.length,
+            postData: temp_post,
+            rating: averageRating 
         });
     },
 
@@ -348,6 +492,21 @@ const controller = {
 
 }
 
+function calculateAverageRating(loopPosts) {
+    if (!loopPosts || loopPosts.length === 0) {
+        return 0; // Return 0 if there are no ratings
+    }
 
+    // Calculate the sum of all integer ratings
+    let totalRatings = 0;
+    loopPosts.forEach(post => {
+        totalRatings += Math.floor(post.rating);
+    });
+
+    // Calculate the average rating by dividing the sum by 5
+    const averageRating = totalRatings / loopPosts.length;
+
+    return averageRating.toFixed(1);
+}
 
 export default controller;
