@@ -278,6 +278,26 @@ const controller = {
         
     },
 
+    getEstablishments: async function(req, res) {
+        const estData = await Establishment.find({});
+        //console.log(estData);
+        const establishments = [];
+        for (let i = 0; i < estData.length; i++) {
+            establishments.push({
+                name: estData[i].name,
+                description: estData[i].description,
+                owner: estData[i].owner,
+                path: estData[i].path,
+                icon: estData[i].icon,
+            });
+        }
+        console.log(establishments);
+        res.render('estabpage', {
+            layout: 'homepagelayout',  
+            establishments: establishments,
+        })
+    },
+
     getEstAteRicas: async function(req, res) {
         const estData = await Establishment.findOne({name: "Ate Rica's Bacsilog"});
         let temp_estData = {
@@ -299,6 +319,7 @@ const controller = {
                 estname: posts[i].estname,
                 cust: posts[i].cust,
                 cust_name: temp_cust.name,
+                cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
@@ -413,6 +434,7 @@ const controller = {
                 estname: posts[i].estname,
                 cust: posts[i].cust,
                 cust_name: temp_cust.name,
+                cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
@@ -487,6 +509,12 @@ const controller = {
         } else {
             res.sendStatus(200);
         }
+    },
+
+    addComment: async function(req, res) {
+        const comment_data = req.body;
+        console.log(comment_data);
+
     },
 
 

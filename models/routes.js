@@ -30,10 +30,11 @@ router.post(`/loginUser`, controller.loginUser);
 router.post(`/registerUser`, controller.registerUser);
 router.get(`/logout`, controller.logoutUser);
 
-
+router.post(`/comment`, controller.addComment);
 router.get(`/updateHelpful`, controller.updateHelpful);
 router.get(`/updateNotHelpful`, controller.updateNotHelpful);
 
+router.get(`/estabPage`, controller.getEstablishments);
 router.get(`/estAteRicas`, controller.getEstAteRicas);
 router.get(`/estGoodMunch`, controller.getEstGoodMunch);
 router.get(`/estHappyNHealthy`, controller.getEstHappyNHealthy);
