@@ -39,7 +39,7 @@
             <h2>Reviews</h2>
             <ul>
                     {{#each postData}}
-                    <li class="review-item">
+                    <li class="review-item" onclick="editPost('{{this._id}}')">
                         <div class="review-header">
                             <p class="restaurant">
                                 {{this.estname}}
@@ -66,3 +66,12 @@
         </div>
 
     </div>
+
+    <script>
+
+        function editPost(postId){
+            console.log(postId);
+            window.location.href = `/editPost?postId=` + postId;
+            
+        }
+    </script>

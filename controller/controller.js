@@ -191,7 +191,6 @@ const controller = {
             }
 
             const posts = await Post.find({ cust: activeUser._id } );
-            console.log(posts);
             let temp_cust;
             let temp_post = [];
             for (let i = 0; i < posts.length; i++) {
@@ -563,6 +562,61 @@ const controller = {
             console.error(err);
             return res.sendStatus(500);
         }
+    },
+
+    editPost: async function(req, res) {
+        try{
+            const editData = req.body;
+            
+            
+            if(editData.submit == 'confirm'){
+                const post = await Post.findOne({_id: editData._id});
+                console.log(post);
+                const updatePost = await Post.updateOne({_id: post._id}, {$set: {
+                    review: editData.review,
+                    rating: editData.rating,
+                
+                }});
+            }
+            else if(editData.submit == 'delete'){
+                const post = await Post.deleteOne({_id: editData._id});
+            }
+            
+
+        }catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
+        }
+
+        res.redirect(`/viewprofile`);
+    },
+
+    getEditPost: async function(req, res){
+        const postId = req.query.postId;
+        const post = await Post.findOne({_id: postId});
+
+        let temp_cust;
+        let temp_post;
+        temp_cust = await Customer.findOne({ _id: post.cust});
+
+        temp_post = {
+            _id: post._id.toString(),
+            review: post.review,
+            estname: post.estname,
+            cust: post.cust,
+            cust_name: temp_cust.name,
+            cust_profpic: temp_cust.path,
+            rating: post.rating,
+            attached: post.attached,
+            helpful_num: post.helpful_num,
+            nothelpful_num: post.nothelpful_num,
+        };
+
+
+        res.render('editreview', {
+            layout: 'createreviewlayout',
+            post: temp_post,
+        });
     },
 
     getSearchResults: async function(req, res,) {
