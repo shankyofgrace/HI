@@ -215,7 +215,7 @@ function calculateAverageRating(loopPosts) {
     });
 
     // Calculate the average rating by dividing the sum by 5
-    const averageRating = totalRatings / 5;
+    const averageRating = totalRatings / loopPosts.length;
     console.log(totalRatings);
     return averageRating;
 }

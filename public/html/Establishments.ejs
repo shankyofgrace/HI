@@ -111,11 +111,11 @@
             <button onclick="incrementHelpful('<%= loopPosts[i]._id.toString() %>');">Not Helpful <%=
                 loopPosts[i].helpful_num %></button>
 
-            <form action="/comment" method="POST">
+            <form id="comment_form" action="/comment" method="POST">
               <textarea placeholder="write a comment..." name="comment"></textarea>
               <div class="row button">
                 <!-- <input type="submit" value="comment_btn" id="login-btn"> -->
-                <button type="submit" value="comment_btn" id="login-btn">Add Comment</button>
+                <button type="submit" value="comment_btn" id="submitcommentbtn">Add Comment</button>
 
                 <!-- Hidden input field -->
                 <input type="hidden" name="post_number" value="<%= loopPosts[i]._id %>">

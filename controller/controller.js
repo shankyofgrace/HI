@@ -6,7 +6,20 @@ import { Comment } from "../models/commentSchema.js";
 
 let registerValues = null;
 let activeUser = null;
+let activeUserRole = null;
 let estData;
+let userData = null;
+
+import multer from 'multer';
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // The folder where uploaded images will be stored
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
 
 
 const controller = {
@@ -87,6 +100,9 @@ const controller = {
                             queryParams.append('message', 'Error creating user!');
                             return res.redirect(`/`);
                         }
+                        
+                        activeUser = newCustomer;
+                        activeUserRole = 'customer';
                         registerValues = null;
                         res.redirect('/home');
                     });
@@ -108,6 +124,8 @@ const controller = {
                             queryParams.append('message', 'Error creating establishment!');
                             return res.redirect(`/`);
                         }
+                        activeUser = newOwner;
+                        activeUserRole = 'owner';
                         registerValues = null;
                         res.redirect('/home');
                     });
@@ -131,10 +149,12 @@ const controller = {
             const existingOwner = await Owner.findOne({email: userdata.email, password: userdata.password});
             
             if(existingCustomer) {
+                activeUserRole = 'customer';
                 activeUser = existingCustomer;
                 return res.redirect(`/home`);
             }
             else if(existingOwner) {
+                activeUserRole = 'owner';
                 activeUser = existingOwner;
                 return res.redirect(`/home`);
             }
@@ -156,21 +176,136 @@ const controller = {
         res.redirect(`/`);
     },
 
+    viewProfile: async function(req, res) {
+        if(activeUserRole == 'customer') {
+            activeUser = await Customer.findOne({_id: activeUser._id});
+            let temp_userData = {
+                name: activeUser.name, 
+                username: activeUser.username,
+                email: activeUser.email,
+                password: activeUser.password,
+                date: activeUser.date.toString().substring(0, 9),
+                location: activeUser.location,
+                path: activeUser.path,
+                userbio: activeUser.userbio,
+            }
+
+            const posts = await Post.find({ cust: activeUser._id } );
+            let temp_cust;
+            let temp_post = [];
+            for (let i = 0; i < posts.length; i++) {
+                temp_cust = await Customer.findOne({ _id: posts[i].cust});
+                temp_post.push({
+                    _id: posts[i]._id.toString(),
+                    review: posts[i].review,
+                    estname: posts[i].estname,
+                    cust: posts[i].cust,
+                    cust_name: temp_cust.name,
+                    rating: posts[i].rating,
+                    attached: posts[i].attached,
+                    helpful_num: posts[i].helpful_num,
+                    nothelpful_num: posts[i].nothelpful_num,
+                });
+            }
+
+
+            res.render('viewprofile', {
+                layout: 'viewprofilelayout',
+                userData: temp_userData,
+                postData: temp_post,
+            })
+        }
+        else if(activeUserRole == 'owner') {
+            let temp_userData = {
+                name: activeUser.name, 
+                email: activeUser.email,
+                password: activeUser.password,
+                location: activeUser.location,
+            }
+        }
+
+        
+    },
+
+    editUser: async function(req, res) {
+        if(activeUserRole == 'customer') {
+            let temp_userData = {
+                name: activeUser.name, 
+                username: activeUser.username,
+                email: activeUser.email,
+                password: activeUser.password,
+                date: activeUser.date.toString().substring(0, 9),
+                location: activeUser.location,
+                path: activeUser.path,
+                userbio: activeUser.userbio,
+            }
+
+
+            res.render('editprofile', {
+                layout: 'editprofilelayout',
+                userData: temp_userData,
+    
+            })
+        }
+        
+    },
+
+    editUserDetails:  async function(req, res) {
+        const updatedDetails = req.body;
+        
+        let img_path = req.file;
+        if(img_path === undefined){
+            img_path = activeUser;
+        }           
+        
+        if(activeUserRole == 'customer') {
+            const updateUser = await Customer.updateOne({_id: activeUser._id}, {$set: {
+                path: img_path.path,
+                name: updatedDetails.name,
+                username: updatedDetails.username,
+                email: updatedDetails.email,
+                location: updatedDetails.location,
+                userbio: updatedDetails.userbio,
+                password: updatedDetails.password,
+            
+            
+            }});
+
+            res.redirect(`/viewprofile`);
+            
+        }
+        
+    },
+
+    getEstablishments: async function(req, res) {
+        const estData = await Establishment.find({});
+        const establishments = [];
+        for (let i = 0; i < estData.length; i++) {
+            establishments.push({
+                name: estData[i].name,
+                description: estData[i].description,
+                owner: estData[i].owner,
+                path: estData[i].path,
+                icon: estData[i].icon,
+                link: estData[i].link,
+            });
+        }
+        res.render('estabpage', {
+            layout: 'homepagelayout',  
+            establishments: establishments,
+            isLoggedIn: activeUser !== null,
+        })
+    },
+
     getEstAteRicas: async function(req, res) {
         const estData = await Establishment.findOne({name: "Ate Rica's Bacsilog"});
-        //console.log(estData);
         let temp_estData = {
-            name: "hi",
-            description: null,
-            owner: null,
-            path: null,
-            icon: null,
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
         };
-        temp_estData.name = estData.name;
-        temp_estData.description = estData.description;
-        temp_estData.owner = estData.owner;
-        temp_estData.path = estData.path;
-        temp_estData.icon = estData.icon;
 
         const posts = await Post.find({ estname: "Ate Rica's Bacsilog" });
         let temp_cust;
@@ -183,22 +318,178 @@ const controller = {
                 estname: posts[i].estname,
                 cust: posts[i].cust,
                 cust_name: temp_cust.name,
+                cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
                 nothelpful_num: posts[i].nothelpful_num,
             });
         }
-        //console.log(temp_post);
-        // estIndex = "Ate Rica's Bacsilog";
-        // const estData = await dbconn.getDb().collection('Establishments').findOne({ _id: new ObjectId('64bc319514a9df3a7505c2c0') });
-        // console.log(estData);
-        // const averageRating = calculateAverageRating(loopPosts);
+        const averageRating = calculateAverageRating(temp_post);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postlength: temp_post.length,
+            postData: temp_post,
+            rating: averageRating,
+            isLoggedIn: activeUser !== null
+        });
+    },
+
+    getEstGoodMunch: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Good Munch"});
+        let temp_estData = {
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
+        };
+
+        const posts = await Post.find({ estname: "Good Munch" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,                
+                cust_profpic: temp_cust.path,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+        const averageRating = calculateAverageRating(temp_post);
         res.render('establishment', { 
             layout: 'estlayout',
             estData: temp_estData,
             postData: temp_post,
-            //loopPosts, averageRating 
+            postlength: temp_post.length,
+            rating: averageRating ,
+            isLoggedIn: activeUser !== null
+        });
+    },
+
+    getEstHappyNHealthy: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Happy N' Healthy"});
+        let temp_estData = {
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
+        };
+
+        const posts = await Post.find({ estname: "Happy N' Healthy" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,
+                cust_profpic: temp_cust.path,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+        const averageRating = calculateAverageRating(temp_post);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postlength: temp_post.length,
+            postData: temp_post,
+            rating: averageRating,
+            isLoggedIn: activeUser !== null
+        });
+    },
+
+    getEstKuyaMels: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Kuya Mels"});
+        let temp_estData = {
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
+        };
+
+        const posts = await Post.find({ estname: "Kuya Mels" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,
+                cust_profpic: temp_cust.path,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+
+        const averageRating = calculateAverageRating(temp_post);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postlength: temp_post.length,
+            postData: temp_post,
+            rating: averageRating ,
+            isLoggedIn: activeUser !== null
+        });
+    },
+
+    getEstPotatoGiant: async function(req, res) {
+        const estData = await Establishment.findOne({name: "Potato Giant"});
+        let temp_estData = {
+            name: estData.name,
+            description: estData.description,
+            owner: estData.owner,
+            path: estData.path,
+            icon: estData.icon,
+        };
+
+        const posts = await Post.find({ estname: "Potato Giant" });
+        let temp_cust;
+        let temp_post = [];
+        for (let i = 0; i < posts.length; i++) {
+            temp_cust = await Customer.findOne({ _id: posts[i].cust});
+            temp_post.push({
+                _id: posts[i]._id.toString(),
+                review: posts[i].review,
+                estname: posts[i].estname,
+                cust: posts[i].cust,
+                cust_name: temp_cust.name,
+                cust_profpic: temp_cust.path,
+                rating: posts[i].rating,
+                attached: posts[i].attached,
+                helpful_num: posts[i].helpful_num,
+                nothelpful_num: posts[i].nothelpful_num,
+            });
+        }
+        const averageRating = calculateAverageRating(temp_post);
+        res.render('establishment', { 
+            layout: 'estlayout',
+            estData: temp_estData,
+            postlength: temp_post.length,
+            postData: temp_post,
+            rating: averageRating,
+            isLoggedIn: activeUser !== null
         });
     },
 
@@ -224,9 +515,154 @@ const controller = {
         }
     },
 
+    addComment: async function(req, res) {
+        const comment_data = req.body;
+        console.log(comment_data);
+
+    },
+
+    getCreateReview: async function(req, res) {
+        try {
+            
+            res.render('createreview', {
+                layout: 'createreviewlayout',
+                isLoggedIn: activeUser !== null
+            })
+    
+        }
+        catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
+        }
+    },
+
+    createPost: async function(req, res) {
+        
+        try{
+            // let img_path = req.file;
+            // if(img_path === undefined){
+            //     img_path = activeUser;
+            // }      
+            console.log(activeUser);
+            const postData = req.body;
+            const newPost = new Post({
+                estname: postData.estname,
+                review: postData.review,
+                rating: postData.rating,
+                cust: activeUser,
+                
+            })
+            newPost.save();
+            if(postData.attached != ''){
+                attached.push(postData.attached);
+            }
+            console.log(postData);
+        }
+        catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
+        }
+    },
+
+    editPost: async function(req, res) {
+        try{
+            const editData = req.body;
+            
+            
+            if(editData.submit == 'confirm'){
+                const post = await Post.findOne({_id: editData._id});
+                console.log(post);
+                const updatePost = await Post.updateOne({_id: post._id}, {$set: {
+                    review: editData.review,
+                    rating: editData.rating,
+                
+                }});
+            }
+            else if(editData.submit == 'delete'){
+                const post = await Post.deleteOne({_id: editData._id});
+            }
+            
+
+        }catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
+        }
+
+        res.redirect(`/viewprofile`);
+    },
+
+    getEditPost: async function(req, res){
+        const postId = req.query.postId;
+        const post = await Post.findOne({_id: postId});
+
+        let temp_cust;
+        let temp_post;
+        temp_cust = await Customer.findOne({ _id: post.cust});
+
+        temp_post = {
+            _id: post._id.toString(),
+            review: post.review,
+            estname: post.estname,
+            cust: post.cust,
+            cust_name: temp_cust.name,
+            cust_profpic: temp_cust.path,
+            rating: post.rating,
+            attached: post.attached,
+            helpful_num: post.helpful_num,
+            nothelpful_num: post.nothelpful_num,
+        };
+
+
+        res.render('editreview', {
+            layout: 'createreviewlayout',
+            post: temp_post,
+        });
+    },
+
+    getSearchResults: async function(req, res,) {
+        const searchQuery = req.query.search.toString();
+        console.log(searchQuery);
+        const estData = await Establishment.find({});
+        const establishments = [];
+        for (let i = 0; i < estData.length; i++) {
+            console.log(estData[i].name);
+            if(estData[i].name.includes(searchQuery)) {
+                establishments.push({
+                    name: estData[i].name,
+                    description: estData[i].description,
+                    owner: estData[i].owner,
+                    path: estData[i].path,
+                    icon: estData[i].icon,
+                    link: estData[i].link,
+                });
+            }
+
+        }
+        res.render('searchresults', {
+            layout: 'homepagelayout',  
+            results: establishments,
+            isLoggedIn: activeUser !== null,
+        })
+    },
+
 
 }
 
+function calculateAverageRating(loopPosts) {
+    if (!loopPosts || loopPosts.length === 0) {
+        return 0; // Return 0 if there are no ratings
+    }
 
+    // Calculate the sum of all integer ratings
+    let totalRatings = 0;
+    loopPosts.forEach(post => {
+        totalRatings += Math.floor(post.rating);
+    });
+
+    // Calculate the average rating by dividing the sum by 5
+    const averageRating = totalRatings / loopPosts.length;
+
+    return averageRating.toFixed(1);
+}
 
 export default controller;

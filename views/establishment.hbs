@@ -4,15 +4,7 @@
     </div>
     <div class="content-text">
       <div class="text-container">
-        <h2>
-            {{estData.name}}
-            <div class="star-rating">
-              
-                <i class="fas fa-star star-icon"></i>
-               
-            </div>
-        </h2>
-        <span class="rating">Rating: <%= averageRating.toFixed(1) %>/5 (<%= loopPosts.length %> review/s)</span>
+        <span id="est_rating" class="rating">Rating: {{rating}}/5 ({{postLength}} review/s)</span>
         <a href="" class="custom-button">Review Now</a>
       </div>
     </div>
@@ -28,21 +20,26 @@
 
     {{#each postData}}
       <div class="comment-container">
+
+       
         <div class="profile-picture">
-          <img src="sprites/agno.jpg" alt="Profile Picture">
+          <img src="{{this.cust_profpic}}" alt="Profile Picture">
         </div>
+        
         <div class="comment-content">
           <span class="comment-author">
             {{this.cust_name}}
           </span>
           &nbsp &nbsp &nbsp
-          <span class="comment-author">
+          <span class="comment-author post-ratings">
             {{this.rating}}/5
           </span>
+          
 
           <p class="comment-text">
             {{this.review}}
           </p>
+          
           <span class="comment-time">143 hours ago</span>
           <div class="comment-buttons">
             <input type="hidden" id="postid" value="{{this._id}}" >
@@ -55,23 +52,81 @@
               <textarea placeholder="write a comment..." name="comment"></textarea>
               <div class="row button">
                 <!-- <input type="submit" value="comment_btn" id="login-btn"> -->
-                <button type="submit" value="comment_btn" id="login-btn">Add Comment</button>
+                <button type="submit" value="comment_btn" id="submitcommentbtn">Add Comment</button>
 
                 <!-- Hidden input field -->
-                <input type="hidden" name="post_number" value="<%= loopPosts[i]._id %>">
+                <input type="hidden" name="post_number" value="{{this._id}}">
               </div>
             </form>
 
           </div>
 
         </div>
+        <!--
+        <div class="dropdown-container">
+          <button class="dropdown-button" onclick="toggleDropdown({{@index}})">⋮</button>
+          <div class="dropdown-content" id="dropdownMenu{{@index}}">
+            <a href="/editPost" onclick="editComment({{@index}})">Edit</a>
+            <a href="/deletePost" onclick="deleteComment({{@index}})">Delete</a>
+          </div>
+        </div>
+        !-->
       </div>
       {{/each}}
 
       <script>
+        //const rating = parseInt(document.querySelector('#est_rating').innerText.substring(8,9));
+        const post_ratings = document.querySelectorAll('.post-ratings');
         const helpfulBtn = document.querySelector('#helpful');
         const postid = document.querySelector('#postid');
         const nothelpfulBtn = document.querySelector('#nothelpful');
+        const container = document.querySelector('#starrating');
+        const submitCommentBtn = document.querySelector('#submitcommentbtn');
+        
+        submitCommentBtn.addEventListener('click', async function (e) {
+          e.preventDefault();
+          const commentForm = document.forms.comment_form;
+          const formData = new FormData(commentForm);
+          // Translate the FormData object to a JS object
+          const data = {};
+          for (const entry of formData.entries()) {
+              console.log(`${entry[0]}, ${entry[1]}`);
+              data[entry[0]] = entry[1];
+          }
+          // Serialize the JS object into JSON string
+          const json = JSON.stringify(data);
+          console.log(json);
+          // Send request to server
+          const response = await fetch('/comment', {
+              method: 'POST',
+              body: json,
+              headers: {
+                  "Content-Type": "application/json"
+              }
+          });
+
+          // resets the form's fields
+          commentForm.reset();
+
+          // Process response
+          {{!-- if (response.status == 200) {
+              // Update list without refreshing page
+              const card = 
+                  `<div class="card">
+                      <img src="/images/icon.webp" class="icon">
+                      <div class="info">
+                          <p class="text"> ${formData.get('name')} </p>
+                          <p class="text"> ${formData.get('refno')} </p>
+                          <p class="text"> Php ${formData.get('amount')} </p>
+                      </div>
+                      <button class="remove"> X </button>
+                  </div>`;
+              
+              cardsDiv.innerHTML += card;
+          } else {
+              console.log(`received response: ${response.status}`);
+          } --}}
+        });
 
         helpfulBtn.addEventListener('click', async function (e) {
           e.preventDefault();
@@ -98,8 +153,98 @@
               console.log('ok');
           }
         });
+
+        window.addEventListener('load',  (event) => {
+          console.log(post_ratings);
+            for(let i = 0; i != post_ratings.length; i++) {
+              let rating = post_ratings[i].innerText.substring(0,1);
+              console.log(rating);
+              let text_rating = document.createElement("p");
+              text_rating.innerText = post_ratings[i].innerText;
+              //post_ratings[i].innerText="";
+              for (let j = 0; j != rating; j++) {
+                let star = document.createElement("i");
+                star.classList.add("fas");
+                star.classList.add("fa-star");
+                star.classList.add("star-icon");
+                post_ratings[i].prepend(star);
+              }
+              //post_ratings[i].appendChild(text_rating);
+            }
+        });
+
         
       </script>
+
+<!--
+      <script>
+  function toggleDropdown(commentNumber) {
+    var dropdownMenu = document.getElementById("dropdownMenu" + commentNumber);
+    dropdownMenu.classList.toggle("show");
+  }
+
+  function editComment(commentNumber) {
     
+    console.log("Edit clicked for comment " + commentNumber);
+  }
+
+  function deleteComment(commentNumber) {
+    
+    console.log("Delete clicked for comment " + commentNumber);
+  }
+
+  // Close the dropdown menu if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropdown-button') && !event.target.matches('.dropdown-content')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  .dropdown-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right:0px;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  .dropdown-content a {
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+
+  .show {
+    display: block;
+  }
+</style>
+   !--> 
 
   </section>
