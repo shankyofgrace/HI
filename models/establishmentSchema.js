@@ -23,7 +23,9 @@ const establishmentSchema = new Schema({
 
     path: String,
 
-    icon: String
+    icon: String,
+    
+    link: String,
 
 });
 

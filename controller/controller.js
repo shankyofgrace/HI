@@ -262,7 +262,7 @@ const controller = {
         if(activeUserRole == 'customer') {
             const updateUser = await Customer.updateOne({_id: activeUser._id}, {$set: {
                 path: img_path.path,
-                 name: updatedDetails.name,
+                name: updatedDetails.name,
                 username: updatedDetails.username,
                 email: updatedDetails.email,
                 location: updatedDetails.location,
@@ -280,7 +280,6 @@ const controller = {
 
     getEstablishments: async function(req, res) {
         const estData = await Establishment.find({});
-        //console.log(estData);
         const establishments = [];
         for (let i = 0; i < estData.length; i++) {
             establishments.push({
@@ -289,12 +288,13 @@ const controller = {
                 owner: estData[i].owner,
                 path: estData[i].path,
                 icon: estData[i].icon,
+                link: estData[i].link,
             });
         }
-        console.log(establishments);
         res.render('estabpage', {
             layout: 'homepagelayout',  
             establishments: establishments,
+            isLoggedIn: activeUser !== null,
         })
     },
 
@@ -332,7 +332,8 @@ const controller = {
             estData: temp_estData,
             postlength: temp_post.length,
             postData: temp_post,
-            rating: averageRating 
+            rating: averageRating,
+            isLoggedIn: activeUser !== null
         });
     },
 
@@ -356,7 +357,8 @@ const controller = {
                 review: posts[i].review,
                 estname: posts[i].estname,
                 cust: posts[i].cust,
-                cust_name: temp_cust.name,
+                cust_name: temp_cust.name,                
+                cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
@@ -364,15 +366,13 @@ const controller = {
             });
         }
         const averageRating = calculateAverageRating(temp_post);
-        const htmltext = `<p>Hiiiiiiiiillooo</p>`
         res.render('establishment', { 
             layout: 'estlayout',
             estData: temp_estData,
             postData: temp_post,
             postlength: temp_post.length,
-            htmltext: htmltext,
-            rating: averageRating 
-
+            rating: averageRating ,
+            isLoggedIn: activeUser !== null
         });
     },
 
@@ -397,6 +397,7 @@ const controller = {
                 estname: posts[i].estname,
                 cust: posts[i].cust,
                 cust_name: temp_cust.name,
+                cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
@@ -409,7 +410,8 @@ const controller = {
             estData: temp_estData,
             postlength: temp_post.length,
             postData: temp_post,
-            rating: averageRating 
+            rating: averageRating,
+            isLoggedIn: activeUser !== null
         });
     },
 
@@ -448,7 +450,8 @@ const controller = {
             estData: temp_estData,
             postlength: temp_post.length,
             postData: temp_post,
-            rating: averageRating 
+            rating: averageRating ,
+            isLoggedIn: activeUser !== null
         });
     },
 
@@ -473,6 +476,7 @@ const controller = {
                 estname: posts[i].estname,
                 cust: posts[i].cust,
                 cust_name: temp_cust.name,
+                cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
@@ -485,7 +489,8 @@ const controller = {
             estData: temp_estData,
             postlength: temp_post.length,
             postData: temp_post,
-            rating: averageRating 
+            rating: averageRating,
+            isLoggedIn: activeUser !== null
         });
     },
 
@@ -515,6 +520,75 @@ const controller = {
         const comment_data = req.body;
         console.log(comment_data);
 
+    },
+
+    getCreateReview: async function(req, res) {
+        try {
+            
+            res.render('createreview', {
+                layout: 'createreviewlayout',
+                isLoggedIn: activeUser !== null
+            })
+    
+        }
+        catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
+        }
+    },
+
+    createPost: async function(req, res) {
+        
+        try{
+            // let img_path = req.file;
+            // if(img_path === undefined){
+            //     img_path = activeUser;
+            // }      
+            console.log(activeUser);
+            const postData = req.body;
+            const newPost = new Post({
+                estname: postData.estname,
+                review: postData.review,
+                rating: postData.rating,
+                cust: activeUser,
+                
+            })
+            newPost.save();
+            if(postData.attached != ''){
+                attached.push(postData.attached);
+            }
+            console.log(postData);
+        }
+        catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
+        }
+    },
+
+    getSearchResults: async function(req, res,) {
+        const searchQuery = req.query.search.toString();
+        console.log(searchQuery);
+        const estData = await Establishment.find({});
+        const establishments = [];
+        for (let i = 0; i < estData.length; i++) {
+            console.log(estData[i].name);
+            if(estData[i].name.includes(searchQuery)) {
+                establishments.push({
+                    name: estData[i].name,
+                    description: estData[i].description,
+                    owner: estData[i].owner,
+                    path: estData[i].path,
+                    icon: estData[i].icon,
+                    link: estData[i].link,
+                });
+            }
+
+        }
+        res.render('searchresults', {
+            layout: 'homepagelayout',  
+            results: establishments,
+            isLoggedIn: activeUser !== null,
+        })
     },
 
 

@@ -30,6 +30,9 @@ router.post(`/loginUser`, controller.loginUser);
 router.post(`/registerUser`, controller.registerUser);
 router.get(`/logout`, controller.logoutUser);
 
+router.get(`/review`, controller.getCreateReview);
+router.post(`/createPost`, controller.createPost);
+
 router.post(`/comment`, controller.addComment);
 router.get(`/updateHelpful`, controller.updateHelpful);
 router.get(`/updateNotHelpful`, controller.updateNotHelpful);
@@ -40,6 +43,8 @@ router.get(`/estGoodMunch`, controller.getEstGoodMunch);
 router.get(`/estHappyNHealthy`, controller.getEstHappyNHealthy);
 router.get(`/estKuyaMels`, controller.getEstKuyaMels);
 router.get(`/estPotatoGiant`, controller.getEstPotatoGiant);
+
+router.get(`/search`, controller.getSearchResults);
 
 
 // router.get(`/about`, controller.getAbout);
