@@ -4,7 +4,7 @@
                 <div class="review-tagline">
                     <h2>CREATE A REVIEW</h2>
                 </div>
-                <form action="/createPost" method="POST">
+                <form action="/createPost" method="POST" enctype="multipart/form-data">
                     <div class="dropdown">
                         <button class="dropdown-button" id="dropbutton">Select an Establishment to
                             Review</button>
@@ -54,7 +54,7 @@
                         </div>
 
                         <h3>Add photos or videos</h3>
-                        <input type="file" accept="image/*, video/*" name="attached">
+                        <input type="file" accept="image/*, video/*" name="attached" multiple>
                         <button type="submit" class="submit-button">Submit Review</button>
 
                     </div>

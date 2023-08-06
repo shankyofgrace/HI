@@ -39,10 +39,13 @@
           <p class="comment-text">
             {{this.review}}
           </p>
+          {{#if this.attached}}
           <div class="pics_container">
-              <img src="/uploads/charlie.jpg" class="review_pics"/>
-              <img src="/uploads/charlie.jpg" class="review_pics"/>
+              {{#each this.attached}}
+              <img src="{{this}}" class="review_pics"/>
+              {{/each}}
           </div>
+          {{/if}}
           
           <span class="comment-time">143 hours ago</span>
           <div class="comment-buttons">

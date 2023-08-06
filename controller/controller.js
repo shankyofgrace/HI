@@ -539,24 +539,29 @@ const controller = {
     createPost: async function(req, res) {
         
         try{
-            // let img_path = req.file;
-            // if(img_path === undefined){
-            //     img_path = activeUser;
-            // }      
-            console.log(activeUser);
+            let img_path = req.files;
+            const attached = [];
+            console.log(img_path);
+            if(img_path === undefined){
+                attached = [];
+            }   
+            else{
+                for(let i=0; i < img_path.length; i++){
+                    attached.push(img_path[i].path);
+                }
+            }   
             const postData = req.body;
             const newPost = new Post({
                 estname: postData.estname,
                 review: postData.review,
                 rating: postData.rating,
+                attached: attached,
                 cust: activeUser,
                 
             })
             newPost.save();
-            if(postData.attached != ''){
-                attached.push(postData.attached);
-            }
-            console.log(postData);
+
+            res.redirect('/home');
         }
         catch (err) {
             console.error(err);
@@ -567,7 +572,9 @@ const controller = {
     editPost: async function(req, res) {
         try{
             const editData = req.body;
-            
+            let img_path = req.files;
+            const attached = [];
+            console.log(img_path);
             
             if(editData.submit == 'confirm'){
                 const post = await Post.findOne({_id: editData._id});
@@ -577,6 +584,12 @@ const controller = {
                     rating: editData.rating,
                 
                 }});
+
+                if(img_path !== undefined){
+                    for(let i=0; i < img_path.length; i++){
+                        post.attached.push(img_path[i].path);
+                    }
+                }
             }
             else if(editData.submit == 'delete'){
                 const post = await Post.deleteOne({_id: editData._id});
