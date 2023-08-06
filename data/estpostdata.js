@@ -5,6 +5,7 @@ import { Establishment } from "../models/establishmentSchema.js";
 import { Owner } from "../models/ownerSchema.js";
 import { Post } from "../models/postSchema.js";
 import { Comment } from "../models/commentSchema.js";
+import bcrypt from 'bcrypt';
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/apdev_test_hi', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -26,31 +27,31 @@ export default async function createOwners(){
         {name: "Rica Blanco",
         username: "bebegurl",
         email: "rica@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft"},
 
         {name: "Munch De Gracia",
         username: "bebegurl",
         email: "munch@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft"},
     
         {name: "Calvin Harris",
         username: "becauseimhappy",
         email: "calvin@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft"},
     
         {name: "Mel Tiangco",
         username: "kuyamels",
         email: "mel@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft"},
     
         {name: "Mashed Potato",
         username: "giant",
         email: "potato@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft"},
         
     ]    

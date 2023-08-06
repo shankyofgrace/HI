@@ -38,18 +38,5 @@ const customerSchema = new Schema({
 
 });
 
-customerSchema.pre('save', async function (next) {
-    const user = this;
-    if (!user.isModified('password')) return next();
-  
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(user.password, salt);
-      user.password = hash;
-      next();
-    } catch (err) {
-      return next(err);
-    }
-  });
 
 export const Customer = mongoose.model('Customer', customerSchema);
