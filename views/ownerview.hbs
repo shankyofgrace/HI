@@ -110,6 +110,7 @@
         const formContainer = document.querySelectorAll('.form-container');
         const estabname = document.getElementById("estabname").innerText;
         console.log(estabname);
+       
         async function commentPost(index){
           const form = "commentform" + index;
 
@@ -135,64 +136,44 @@
               console.log("ueu");
               const formCont = document.getElementById("formcont" + index);
               
-              // Create the main container div for the comment
               const commentContainer = document.createElement('div');
               commentContainer.classList.add('comment-container');
 
-              // Create the profile picture div
               const profilePictureDiv = document.createElement('div');
               profilePictureDiv.classList.add('profile-picture');
 
-              // Create the profile picture image
               const profilePictureImg = document.createElement('img');
               profilePictureImg.src = "";
               profilePictureImg.alt = "Profile Picture";
 
-              // Append the image to the profile picture div
               profilePictureDiv.appendChild(profilePictureImg);
 
-              // Create the comment content div
               const commentContentDiv = document.createElement('div');
               commentContentDiv.classList.add('comment-content');
 
-              // Create the comment author span
               const commentAuthorSpan = document.createElement('span');
               commentAuthorSpan.classList.add('comment-author');
               commentAuthorSpan.innerHTML= estabname;
-              // Create the text node for the comment author content
-          
 
-
-              // Create the comment text paragraph
               const commentTextP = document.createElement('p');
               commentTextP.classList.add('comment-text');
               commentTextP.innerText = formData.get('comment');
-              // Create the text node for the comment content
-              
 
-       
-
-              // Create the comment time span
               const commentTimeSpan = document.createElement('span');
               commentTimeSpan.classList.add('comment-time');
 
-              // Create the text node for the comment time content
               const commentTimeText = document.createTextNode("143 hours ago");
 
-              // Append the text node to the comment time span
               commentTimeSpan.appendChild(commentTimeText);
 
-              // Append all the elements to the comment content div
               commentContentDiv.appendChild(commentAuthorSpan);
               commentContentDiv.appendChild(document.createTextNode("  "));
               commentContentDiv.appendChild(commentTextP);
               commentContentDiv.appendChild(commentTimeSpan);
 
-              // Append the profile picture div and comment content div to the main comment container
+              
               commentContainer.appendChild(profilePictureDiv);
               commentContainer.appendChild(commentContentDiv);
-
-              // Finally, append the comment container to the parent container
               
               formCont.parentNode.insertBefore(commentContainer, formCont);
               
