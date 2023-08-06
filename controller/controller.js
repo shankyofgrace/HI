@@ -156,7 +156,7 @@ const controller = {
             else if(existingOwner) {
                 activeUserRole = 'owner';
                 activeUser = existingOwner;
-                return res.redirect(`/home`);
+                return res.redirect(`/viewProfile`);
             }
             else {
                 const queryParams = new URLSearchParams();
