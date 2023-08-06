@@ -4,6 +4,7 @@
     </div>
     <div class="content-text">
       <div class="text-container">
+        <h2>{{estData.name}}</h2>
         <span id="est_rating" class="rating">Rating: {{rating}}/5 ({{postLength}} review/s)</span>
         <a href="" class="custom-button">Review Now</a>
       </div>
@@ -54,17 +55,29 @@
                 {{this.helpful_num}}</button>
             <button id="nothelpful" >Not Helpful 
                 {{this.nothelpful_num}}</button>
+            {{#each this.comments}}
+              <div class="comment-container">
+        
+                <div class="profile-picture">
+                  <img src="{{this.pic}}" alt="Profile Picture">
+                </div>
+                
+                <div class="comment-content">
+                  <span class="comment-author">
+                    {{this.estname}}
+                  </span>
+                  &nbsp &nbsp &nbsp                
 
-            <form action="/comment" method="POST">
-              <textarea placeholder="write a comment..." name="comment"></textarea>
-              <div class="row button">
-                <!-- <input type="submit" value="comment_btn" id="login-btn"> -->
-                <button type="submit" value="comment_btn" id="submitcommentbtn">Add Comment</button>
+                  <p class="comment-text">
+                    {{this.comment}}
+                  </p>
+                  
+                  <span class="comment-time">143 hours ago</span>
 
-                <!-- Hidden input field -->
-                <input type="hidden" name="post_number" value="{{this._id}}">
+                </div>
+                
               </div>
-            </form>
+              {{/each}}
 
           </div>
 
@@ -88,52 +101,6 @@
         const postid = document.querySelector('#postid');
         const nothelpfulBtn = document.querySelector('#nothelpful');
         const container = document.querySelector('#starrating');
-        const submitCommentBtn = document.querySelector('#submitcommentbtn');
-        
-        submitCommentBtn.addEventListener('click', async function (e) {
-          e.preventDefault();
-          const commentForm = document.forms.comment_form;
-          const formData = new FormData(commentForm);
-          // Translate the FormData object to a JS object
-          const data = {};
-          for (const entry of formData.entries()) {
-              console.log(`${entry[0]}, ${entry[1]}`);
-              data[entry[0]] = entry[1];
-          }
-          // Serialize the JS object into JSON string
-          const json = JSON.stringify(data);
-          console.log(json);
-          // Send request to server
-          const response = await fetch('/comment', {
-              method: 'POST',
-              body: json,
-              headers: {
-                  "Content-Type": "application/json"
-              }
-          });
-
-          // resets the form's fields
-          commentForm.reset();
-
-          // Process response
-          {{!-- if (response.status == 200) {
-              // Update list without refreshing page
-              const card = 
-                  `<div class="card">
-                      <img src="/images/icon.webp" class="icon">
-                      <div class="info">
-                          <p class="text"> ${formData.get('name')} </p>
-                          <p class="text"> ${formData.get('refno')} </p>
-                          <p class="text"> Php ${formData.get('amount')} </p>
-                      </div>
-                      <button class="remove"> X </button>
-                  </div>`;
-              
-              cardsDiv.innerHTML += card;
-          } else {
-              console.log(`received response: ${response.status}`);
-          } --}}
-        });
 
         helpfulBtn.addEventListener('click', async function (e) {
           e.preventDefault();

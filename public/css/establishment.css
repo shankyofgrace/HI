@@ -139,13 +139,12 @@ body {
   border-width: 1rem;
   border-color: black;
   padding: 10px;
-  margin-bottom: 10px;
   display: flex;
 
   width: 100%;
   /* Center the .comment-container below other divs */
   border: 0.5px solid black;
-  margin: 0 auto;
+  margin: 10px auto;
 }
 
 .profile-picture {
