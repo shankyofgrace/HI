@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 import { Customer } from "../models/customerSchema.js";
 import { Establishment } from "../models/establishmentSchema.js";
@@ -15,14 +16,14 @@ createEstablishments();
 console.log("Process can be terminated safely now");
 
 
-export default function createCustomers(){
+export default async function createCustomers(){
     const customers = [];
 
     customers.push(new Customer({
         name: "Gabrielle Tongol",
         username: "bebegurl",
         email: "gab@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft",
         path: "uploads/charlie.jpg",
         userbio: "I love taylor swift"
@@ -32,7 +33,7 @@ export default function createCustomers(){
         name: "Taylor Swift",
         username: "swiftie",
         email: "tay@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft",
         path: "uploads/charlie.jpg",
         userbio: "screaming and fighting and kissing in the rain "
@@ -42,7 +43,7 @@ export default function createCustomers(){
         name: "Sam Kim",
         username: "sam",
         email: "sam@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft",
         path: "uploads/charlie.jpg",
         userbio: "can you love me like that"
@@ -52,7 +53,7 @@ export default function createCustomers(){
         name: "Harry Styles",
         username: "harreeey",
         email: "harry@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft",
         path: "uploads/charlie.jpg",
         userbio: "baby you are the love of my life"
@@ -62,7 +63,7 @@ export default function createCustomers(){
         name: "Luke Chiang",
         username: "bebeboi",
         email: "luke@gmail.com",
-        password: "123",
+        password: await bcrypt.hash("123", 10),
         location: "Taft",
         path: "uploads/charlie.jpg",
         userbio: "keeping you close shouldn't be hard"

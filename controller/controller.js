@@ -3,7 +3,7 @@ import { Establishment } from "../models/establishmentSchema.js";
 import { Owner } from "../models/ownerSchema.js";
 import { Post } from "../models/postSchema.js";
 import { Comment } from "../models/commentSchema.js";
-
+import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 
 let registerValues = null;
@@ -148,15 +148,18 @@ const controller = {
             delete userdata.submit;
             console.log(userdata);
             
-            const existingCustomer = await Customer.findOne({email: userdata.email, password: userdata.password});
-            const existingOwner = await Owner.findOne({email: userdata.email, password: userdata.password});
+            const existingCustomer = await Customer.findOne({email: userdata.email});
+            const existingOwner = await Owner.findOne({email: userdata.email});
             
-            if(existingCustomer) {
+            
+            
+             
+            if(existingCustomer && await bcrypt.compare(userdata.password, existingCustomer.password)) {
                 activeUserRole = 'customer';
                 activeUser = existingCustomer;
                 return res.redirect(`/home`);
             }
-            else if(existingOwner) {
+            else if(existingOwner && await bcrypt.compare(userdata.password, existingOwner.password)) {
                 activeUserRole = 'owner';
                 activeUser = existingOwner;
                 isOwner = true;
