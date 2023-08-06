@@ -31,9 +31,9 @@ router.post(`/registerUser`, controller.registerUser);
 router.get(`/logout`, controller.logoutUser);
 
 router.get(`/review`, controller.getCreateReview);
-router.post(`/createPost`, controller.createPost);
+router.post(`/createPost`, upload.array('attached', 10), controller.createPost);
 router.get(`/editPost`, controller.getEditPost);
-router.post(`/confirmEditPost`, controller.editPost);
+router.post(`/confirmEditPost`, upload.array('attached', 10), controller.editPost);
 
 router.post(`/comment`, controller.addComment);
 router.get(`/updateHelpful`, controller.updateHelpful);

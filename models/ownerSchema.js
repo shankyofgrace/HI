@@ -30,6 +30,13 @@ const ownerSchema = new Schema({
         default: Date.now()
     },
 
+    establishment:{
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'Establishment',
+        immutable: true
+    },
+
     location: String,
 
 });

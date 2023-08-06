@@ -9,7 +9,7 @@ import { Comment } from "../models/commentSchema.js";
 
 mongoose.connect('mongodb://127.0.0.1:27017/apdev_test_hi', { useNewUrlParser: true, useUnifiedTopology: true });
 
-createEstablishments();
+createOwners();
 createPosts();
 
 console.log("Process can be terminated safely now");
@@ -19,77 +19,76 @@ async function getCustomer(cusname) {
     return customer;
 }
 
-export default async function createEstablishments(){
+export default async function createOwners(){
 
-    const estDetails = [
+    const ownerDetails = [
 
-        {name: "Ate Rica's Bacsilog",
-        description: "The standard Silog meal is composed of 1 major ingredient (ex. Bacon, Tapa, Tocino, etc.) 1 piece egg, Ate Rica’s Special Cheese Sauce and liquid savor topped on 1 cup of rice. More than 15 years of operations later, Ate Rica's Bacsilog remains strong and determined to provide to more people the famous Bacsilog with its memorable recipe and taste; a taste that, in the words of a blogger, \"the Lasallian community holds close to their hearts.\"",
-        path: "../sprites/header-aterica.png",
-        icon: "../sprites/png-bacsilog.png",
-        link: "/estAteRicas"},
+        {name: "Rica Blanco",
+        username: "bebegurl",
+        email: "rica@gmail.com",
+        password: "123",
+        location: "Taft"},
 
-        {name: "Good Munch",
-        description: "Good Munch serves SO MUNCH BETTER Asian Fusion Recipes curated with lots of love from Chef Munch! After a walk around De La Salle University, many visitors stop by this restaurant. If you never turned out to taste Filipino cuisine, take your chance at Good Munch. Clients can have tasty chicken at this place.",
-        path: "../sprites/header-goodmunch.png",
-        icon: "../sprites/png-goodmunch.png",
-        link: "/estGoodMunch"},
+        {name: "Munch De Gracia",
+        username: "bebegurl",
+        email: "munch@gmail.com",
+        password: "123",
+        location: "Taft"},
     
-        {name: "Happy N' Healthy",
-        description: "Sustainable diets allow for occasional indulgences in comfort foods, so don't hesitate to treat yourself now and then to our Happpy combo of Pasta, Pizza, and Potato Wedges!",
-        path: "../sprites/header-hnh.png",
-        icon: "../sprites/png-hnh.png",
-        link: "/estHappyNHealthy"},
+        {name: "Calvin Harris",
+        username: "becauseimhappy",
+        email: "calvin@gmail.com",
+        password: "123",
+        location: "Taft"},
     
-        {name: "Kuya Mels",
-        description: "Kuya Mel's is a popular food stall located in the bustling market area of Agno. It is a vibrant and lively establishment known for its mouthwatering street food and delectable local delicacies. The stall is named after its owner, Kuya Mel, who is renowned for his culinary skills and dedication to providing top-notch food to his customers. It is mostly popular for its student-friendly price and still very worth every penny. Their menu contains mostly classic Filipino foods. As what Lasallians say, a \"must-try\"!",
-        path: "../sprites/header-kuyamel.jpg",
-        icon: "../sprites/png-kuyamel.png",
-        link: "/estKuyaMels"},
+        {name: "Mel Tiangco",
+        username: "kuyamels",
+        email: "mel@gmail.com",
+        password: "123",
+        location: "Taft"},
     
-        {name: "Potato Giant",
-        description: "If you’re always in the mood for fries or other deep-fried potato treats, why not head on to Potato Giant! Discover this food court favorite and get your fix of seriously satisfying potatoes– from classic fries to thick cut creations, all topped off with loads and fun and flavors.",
-        owner_id: "64bceedb14a9df3a7505c2c9",
-        path: "../sprites/header-potato.png",
-        icon: "../sprites/png-potato.png",
-        link: "/estPotatoGiant"},
+        {name: "Mashed Potato",
+        username: "giant",
+        email: "potato@gmail.com",
+        password: "123",
+        location: "Taft"},
         
     ]    
-    const ownerList = await Owner.find({});
+    const estabList = await Establishment.find({});
     
-    const establishments = [];
+    const owner = [];
     let index;
-    for(let i = 0; i < ownerList.length; i++) {
-        switch(ownerList[i].email) {
-            case "calvin@gmail.com":
+    for(let i = 0; i < estabList.length; i++) {
+        switch(estabList[i].name) {
+            case "Happy N' Healthy":
                 index = 2;
                 break;
-            case "mel@gmail.com":
+            case "Kuya Mels":
                 index = 3;
                 break;
-            case "potato@gmail.com":
+            case "Potato Giant":
                 index = 4;
                 break;
-            case "munch@gmail.com":
+            case "Good Munch":
                 index = 1;
                 break;
-            case "rica@gmail.com":
+            case "Ate Rica's Bacsilog":
                 index = 0;
                 break;
         }
         
-        establishments.push(new Establishment({
-            name: estDetails[index].name,
-            description: estDetails[index].description,
-            owner: ownerList[i],
-            path: estDetails[index].path,
-            icon: estDetails[index].icon,
-            link: estDetails[index].link
+        owner.push(new Owner({
+            name: ownerDetails[index].name,
+            username: ownerDetails[index].username,
+            email: ownerDetails[index].email,
+            establishment: estabList[i],
+            password: ownerDetails[index].password,
+            location: ownerDetails[index].location
         }));
     }
 
-    for (let i = 0; i < establishments.length; i++) {
-        establishments[i].save();
+    for (let i = 0; i < owner.length; i++) {
+        owner[i].save();
     }
 }
 

@@ -293,3 +293,16 @@ body {
     font-size: 15px;
   }
 }
+
+.pics_container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 150px;
+  height: 150px;
+}
+
+.review_pics {
+  max-width: 100%;
+  max-height: 100%;
+}
