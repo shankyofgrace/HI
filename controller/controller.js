@@ -4,9 +4,12 @@ import { Owner } from "../models/ownerSchema.js";
 import { Post } from "../models/postSchema.js";
 import { Comment } from "../models/commentSchema.js";
 
+import { ObjectId } from 'mongodb';
+
 let registerValues = null;
 let activeUser = null;
 let activeUserRole = null;
+let isOwner = true;
 let estData;
 let userData = null;
 
@@ -156,6 +159,7 @@ const controller = {
             else if(existingOwner) {
                 activeUserRole = 'owner';
                 activeUser = existingOwner;
+                isOwner = true;
                 return res.redirect(`/viewProfile`);
             }
             else {
@@ -218,10 +222,72 @@ const controller = {
         else if(activeUserRole == 'owner') {
             let temp_userData = {
                 name: activeUser.name, 
+                username: activeUser.username,
                 email: activeUser.email,
                 password: activeUser.password,
                 location: activeUser.location,
+                establishment: activeUser.establishment
             }
+            
+            
+
+            const estData = await Establishment.findOne({_id: activeUser.establishment});
+            let temp_estData = {
+                name: estData.name,
+                description: estData.description,
+                owner: estData.owner,
+                path: estData.path,
+                icon: estData.icon,
+            };
+
+            const posts = await Post.find({ estname: estData.name });
+            let temp_cust;
+            let temp_post = [];let temp_owner;
+            let temp_comments;
+            let comments = [];
+            for (let i = 0; i < posts.length; i++) {
+                comments = [];
+                temp_comments = await Comment.find({post_number: posts[i]._id});
+                console.log(posts[i]);
+                for (let j = 0; j < temp_comments.length; j++) {
+                    temp_owner = await Owner.findOne({ _id: temp_comments[j].owner});
+                    
+                    let temp_est = await Establishment.findOne({_id: temp_owner.establishment});
+    
+                    comments.push({
+                        comment: temp_comments[j].comment,
+                        owner_name: temp_owner.name,
+                        estname: temp_est.name,
+                        pic: temp_est.icon
+                    })
+                }
+                temp_cust = await Customer.findOne({ _id: posts[i].cust});
+                temp_post.push({
+                    _id: posts[i]._id.toString(),
+                    review: posts[i].review,
+                    estname: posts[i].estname,
+                    cust: posts[i].cust,
+                    cust_name: temp_cust.name,                
+                    cust_profpic: temp_cust.path,
+                    rating: posts[i].rating,
+                    attached: posts[i].attached,
+                    helpful_num: posts[i].helpful_num,
+                    nothelpful_num: posts[i].nothelpful_num,
+                    comments: comments,
+                });
+            }
+            const averageRating = calculateAverageRating(temp_post);
+
+            res.render('ownerview', {
+                layout: 'ownerlayout',
+                userData: temp_userData,
+                isLoggedIn: activeUser !== null,
+                isOwner: isOwner,
+                postlength: temp_post.length,
+                postData: temp_post,
+                rating: averageRating,
+                estData: temp_estData,
+            })
         }
 
         
@@ -308,9 +374,28 @@ const controller = {
         };
 
         const posts = await Post.find({ estname: "Ate Rica's Bacsilog" });
+        console.log("hellloooo");
         let temp_cust;
+        let temp_owner;
+        let temp_comments;
         let temp_post = [];
+        let comments = [];
         for (let i = 0; i < posts.length; i++) {
+            comments = [];
+            temp_comments = await Comment.find({post_number: posts[i]._id});
+            console.log(posts[i]);
+            for (let j = 0; j < temp_comments.length; j++) {
+                temp_owner = await Owner.findOne({ _id: temp_comments[j].owner});
+                
+                let temp_est = await Establishment.findOne({_id: temp_owner.establishment});
+
+                comments.push({
+                    comment: temp_comments[j].comment,
+                    owner_name: temp_owner.name,
+                    estname: temp_est.name,
+                    pic: temp_est.icon
+                })
+            }
             temp_cust = await Customer.findOne({ _id: posts[i].cust});
             temp_post.push({
                 _id: posts[i]._id.toString(),
@@ -323,7 +408,11 @@ const controller = {
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
                 nothelpful_num: posts[i].nothelpful_num,
+                comments: comments,
+                
             });
+            console.log(temp_post[i]);
+            console.log(temp_post[i].comments);
         }
         const averageRating = calculateAverageRating(temp_post);
         res.render('establishment', { 
@@ -332,7 +421,8 @@ const controller = {
             postlength: temp_post.length,
             postData: temp_post,
             rating: averageRating,
-            isLoggedIn: activeUser !== null
+            isLoggedIn: activeUser !== null,
+            isOwner: true,
         });
     },
 
@@ -349,7 +439,25 @@ const controller = {
         const posts = await Post.find({ estname: "Good Munch" });
         let temp_cust;
         let temp_post = [];
+        let temp_owner;
+        let temp_comments;
+        let comments = [];
         for (let i = 0; i < posts.length; i++) {
+            comments = [];
+            temp_comments = await Comment.find({post_number: posts[i]._id});
+            console.log(posts[i]);
+            for (let j = 0; j < temp_comments.length; j++) {
+                temp_owner = await Owner.findOne({ _id: temp_comments[j].owner});
+                
+                let temp_est = await Establishment.findOne({_id: temp_owner.establishment});
+
+                comments.push({
+                    comment: temp_comments[j].comment,
+                    owner_name: temp_owner.name,
+                    estname: temp_est.name,
+                    pic: temp_est.icon
+                })
+            }
             temp_cust = await Customer.findOne({ _id: posts[i].cust});
             temp_post.push({
                 _id: posts[i]._id.toString(),
@@ -362,6 +470,7 @@ const controller = {
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
                 nothelpful_num: posts[i].nothelpful_num,
+                comments: comments,
             });
         }
         const averageRating = calculateAverageRating(temp_post);
@@ -371,7 +480,8 @@ const controller = {
             postData: temp_post,
             postlength: temp_post.length,
             rating: averageRating ,
-            isLoggedIn: activeUser !== null
+            isLoggedIn: activeUser !== null,
+            isOwner: isOwner,
         });
     },
 
@@ -388,19 +498,38 @@ const controller = {
         const posts = await Post.find({ estname: "Happy N' Healthy" });
         let temp_cust;
         let temp_post = [];
+        let temp_owner;
+        let temp_comments;
+        let comments = [];
         for (let i = 0; i < posts.length; i++) {
+            comments = [];
+            temp_comments = await Comment.find({post_number: posts[i]._id});
+            console.log(posts[i]);
+            for (let j = 0; j < temp_comments.length; j++) {
+                temp_owner = await Owner.findOne({ _id: temp_comments[j].owner});
+                
+                let temp_est = await Establishment.findOne({_id: temp_owner.establishment});
+
+                comments.push({
+                    comment: temp_comments[j].comment,
+                    owner_name: temp_owner.name,
+                    estname: temp_est.name,
+                    pic: temp_est.icon
+                })
+            }
             temp_cust = await Customer.findOne({ _id: posts[i].cust});
             temp_post.push({
                 _id: posts[i]._id.toString(),
                 review: posts[i].review,
                 estname: posts[i].estname,
                 cust: posts[i].cust,
-                cust_name: temp_cust.name,
+                cust_name: temp_cust.name,                
                 cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
                 nothelpful_num: posts[i].nothelpful_num,
+                comments: comments,
             });
         }
         const averageRating = calculateAverageRating(temp_post);
@@ -410,7 +539,8 @@ const controller = {
             postlength: temp_post.length,
             postData: temp_post,
             rating: averageRating,
-            isLoggedIn: activeUser !== null
+            isLoggedIn: activeUser !== null,
+            isOwner: isOwner,
         });
     },
 
@@ -427,22 +557,40 @@ const controller = {
         const posts = await Post.find({ estname: "Kuya Mels" });
         let temp_cust;
         let temp_post = [];
+        let temp_owner;
+        let temp_comments;
+        let comments = [];
         for (let i = 0; i < posts.length; i++) {
+            comments = [];
+            temp_comments = await Comment.find({post_number: posts[i]._id});
+            console.log(posts[i]);
+            for (let j = 0; j < temp_comments.length; j++) {
+                temp_owner = await Owner.findOne({ _id: temp_comments[j].owner});
+                
+                let temp_est = await Establishment.findOne({_id: temp_owner.establishment});
+
+                comments.push({
+                    comment: temp_comments[j].comment,
+                    owner_name: temp_owner.name,
+                    estname: temp_est.name,
+                    pic: temp_est.icon
+                })
+            }
             temp_cust = await Customer.findOne({ _id: posts[i].cust});
             temp_post.push({
                 _id: posts[i]._id.toString(),
                 review: posts[i].review,
                 estname: posts[i].estname,
                 cust: posts[i].cust,
-                cust_name: temp_cust.name,
+                cust_name: temp_cust.name,                
                 cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
                 nothelpful_num: posts[i].nothelpful_num,
+                comments: comments,
             });
         }
-
         const averageRating = calculateAverageRating(temp_post);
         res.render('establishment', { 
             layout: 'estlayout',
@@ -450,7 +598,8 @@ const controller = {
             postlength: temp_post.length,
             postData: temp_post,
             rating: averageRating ,
-            isLoggedIn: activeUser !== null
+            isLoggedIn: activeUser !== null,
+            isOwner: isOwner,
         });
     },
 
@@ -467,19 +616,38 @@ const controller = {
         const posts = await Post.find({ estname: "Potato Giant" });
         let temp_cust;
         let temp_post = [];
+        let temp_owner;
+        let temp_comments;
+        let comments = [];
         for (let i = 0; i < posts.length; i++) {
+            comments = [];
+            temp_comments = await Comment.find({post_number: posts[i]._id});
+            console.log(posts[i]);
+            for (let j = 0; j < temp_comments.length; j++) {
+                temp_owner = await Owner.findOne({ _id: temp_comments[j].owner});
+                
+                let temp_est = await Establishment.findOne({_id: temp_owner.establishment});
+
+                comments.push({
+                    comment: temp_comments[j].comment,
+                    owner_name: temp_owner.name,
+                    estname: temp_est.name,
+                    pic: temp_est.icon
+                })
+            }
             temp_cust = await Customer.findOne({ _id: posts[i].cust});
             temp_post.push({
                 _id: posts[i]._id.toString(),
                 review: posts[i].review,
                 estname: posts[i].estname,
                 cust: posts[i].cust,
-                cust_name: temp_cust.name,
+                cust_name: temp_cust.name,                
                 cust_profpic: temp_cust.path,
                 rating: posts[i].rating,
                 attached: posts[i].attached,
                 helpful_num: posts[i].helpful_num,
                 nothelpful_num: posts[i].nothelpful_num,
+                comments: comments,
             });
         }
         const averageRating = calculateAverageRating(temp_post);
@@ -489,7 +657,8 @@ const controller = {
             postlength: temp_post.length,
             postData: temp_post,
             rating: averageRating,
-            isLoggedIn: activeUser !== null
+            isLoggedIn: activeUser !== null,
+            isOwner: isOwner,
         });
     },
 
@@ -519,6 +688,21 @@ const controller = {
         const comment_data = req.body;
         console.log(comment_data);
 
+        const newComment = new Comment({
+            comment: comment_data.comment,
+            post_number: new ObjectId(comment_data.post_number),
+            owner: activeUser,
+        })
+
+        if(newComment.save()){
+            res.sendStatus(200);
+        }
+        else{
+            res.sendStatus(500);
+        }
+
+        
+
     },
 
     getCreateReview: async function(req, res) {
@@ -528,7 +712,7 @@ const controller = {
                 layout: 'createreviewlayout',
                 isLoggedIn: activeUser !== null
             })
-    
+
         }
         catch (err) {
             console.error(err);
@@ -607,7 +791,6 @@ const controller = {
     getEditPost: async function(req, res){
         const postId = req.query.postId;
         const post = await Post.findOne({_id: postId});
-
         let temp_cust;
         let temp_post;
         temp_cust = await Customer.findOne({ _id: post.cust});
@@ -639,7 +822,7 @@ const controller = {
         const establishments = [];
         for (let i = 0; i < estData.length; i++) {
             console.log(estData[i].name);
-            if(estData[i].name.includes(searchQuery)) {
+            if(estData[i].name.toLowerCase().includes(searchQuery)) {
                 establishments.push({
                     name: estData[i].name,
                     description: estData[i].description,
@@ -652,7 +835,7 @@ const controller = {
 
         }
         res.render('searchresults', {
-            layout: 'homepagelayout',  
+            layout: 'homepagelayout',
             results: establishments,
             isLoggedIn: activeUser !== null,
         })
@@ -663,16 +846,14 @@ const controller = {
 
 function calculateAverageRating(loopPosts) {
     if (!loopPosts || loopPosts.length === 0) {
-        return 0; // Return 0 if there are no ratings
+        return 0;
     }
 
-    // Calculate the sum of all integer ratings
     let totalRatings = 0;
     loopPosts.forEach(post => {
         totalRatings += Math.floor(post.rating);
     });
 
-    // Calculate the average rating by dividing the sum by 5
     const averageRating = totalRatings / loopPosts.length;
 
     return averageRating.toFixed(1);

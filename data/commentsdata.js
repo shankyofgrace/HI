@@ -13,21 +13,30 @@ createComments();
 
 console.log("Process can be terminated safely now");
 
-
+async function getOwnerId(name) {
+    const owner =  await Owner.findOne({name: name});
+    return owner._id;
+}
 
 export default  async function createComments(){
-    const post = await Post.findOne({estname: "Ate Rica's Bacsilog"});
     const comments = [];
+    const posts = await Post.find({});
+    let ownerid;
+    for(let i = 0; i < posts.length; i++) {
+        if(posts[i].estname === "Ate Rica's Bacsilog"){
+            ownerid = await getOwnerId("Rica Blanco");
+        }
+        if(posts[i].estname === "Happy N' Healthy"){
+            ownerid = await getOwnerId("Calvin Harris");
+        }
+        comments.push(new Comment({
+            owner: ownerid,
+            comment: "Thank you!",
+            post_number: posts[i].id.toString(),
+        }));
 
-    comments.push(new Comment({
-        comment: "ahhahahhyoko na",
-        post_number: post.id.toString(),
-    }));
-
-    comments.push(new Comment({
-        comment: "Hihello",
-        post_number: post.id.toString(),
-    }));
+        
+    }
     
     
 

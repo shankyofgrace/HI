@@ -10,10 +10,18 @@ const commentSchema = new Schema({
     },
 
     post_number:{
-        type: String,
+        type: Schema.Types.ObjectId,
         required: true,
+    },
+
+    owner:{
+        type: Schema.Types.ObjectId,
+        
+        ref: 'Owner',
+        immutable: true
     }
 
 });
 
 export const Comment = mongoose.model('Comment', commentSchema);
+
